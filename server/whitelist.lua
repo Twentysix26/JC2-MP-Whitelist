@@ -26,12 +26,9 @@ end
 
 function Whitelist:Verify(playerID)
 	if self.active == false then return true end -- Only if whitelist.txt is empty
-	local count = 1
-	for i=#self.list,1,-1 do
-		if self.list[count] == playerID then
-			return true
-		end
-	count = count + 1
+	local i
+	for i = 1, #self.list do
+		if self.list[i] == playerID then return true end
 	end
 end
 
@@ -71,12 +68,9 @@ function Whitelist:Commands(args)
 end
 
 function Whitelist:isAdmin(playerID)
-	local count = 1
-	for i=#self.admins,1,-1 do
-		if self.admins[count] == playerID then
-			return true
-		end
-	count = count + 1
+	local i
+	for i = 1, #self.admins do
+		if self.admins[i] == playerID then return true end
 	end
 end
 
