@@ -2,7 +2,6 @@ class 'Whitelist' -- Whitelist script by Twentysix
 
 function Whitelist:__init()
 	self.admins = {"ChangeMe", "AndMeTooIfYouWant"} -- Put admin's SteamID here (add/delete fields if needed)
-	self.list = {}
 	self.notification = false -- If true displays kicks in chat
 	self.active = true
 	self:LoadWhitelist()
@@ -11,6 +10,7 @@ function Whitelist:__init()
 end
 
 function Whitelist:LoadWhitelist()
+	self.list = {}
 	local f = io.open( "whitelist.txt", "r" )
 
 	for line in f:lines() do
@@ -48,21 +48,23 @@ function Whitelist:PlayerConnect(args)
 end
 
 function Whitelist:Commands(args)
+	local cmd = string.split(args.text, " ")
 	local id = args.player:GetSteamId().string
 	if self:isAdmin(id) == true then -- Player is admin
-		if string.match(args.text, "/addsteamid") ~= nil and string.match(args.text, "STEAM_.*") ~= nil then
-			local SteamID = string.match(args.text, "STEAM_.*")
+		if string.match(cmd[1], "/addsteamid") ~= nil and string.match(cmd[2], "STEAM_.*") ~= nil then
+			local SteamID = cmd[2]
 			local f = io.open( "whitelist.txt", "a" )
 			f:write("\n".. SteamID)
 			f:close()
 			print(args.player:GetName() .. " whitelisted " .. SteamID)
+			args.player:SendChatMessage("[Whitelist] " .. SteamID .. " is now whitelisted", Color(0,251,255))
 			self:LoadWhitelist()
-		elseif string.match(args.text, "/wnotifications") ~= nil then
+		elseif string.match(cmd[1], "/wnotifications") ~= nil then
 			self.notification = not self.notification
-			Chat:Broadcast("[Whitelist] Kick notifications set to: " .. tostring(self.notification), Color(0,251,255))
-		elseif string.match(args.text, "/wreload") ~= nil then
+			args.player:SendChatMessage("[Whitelist] Kick notifications set to: " .. tostring(self.notification), Color(0,251,255))
+		elseif string.match(cmd[1], "/wreload") ~= nil then
 			self:LoadWhitelist()
-			Chat:Broadcast("[Whitelist] Whitelist reloaded", Color(0,251,255))
+			args.player:SendChatMessage("[Whitelist] Whitelist reloaded", Color(0,251,255))
 			print(args.player:GetName() .. " reloaded the whitelist")
 		end
 	end
